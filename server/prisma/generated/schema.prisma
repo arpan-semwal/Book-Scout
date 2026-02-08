@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String?
+  libraries Library[]
+}
+
+model Library {
+  id            Int         @id @default(autoincrement())
+  ownerId       String
+  name          String      @unique
+  type          LibraryType @default(reading_room)
+  address       String?
+  latitude      Float
+  longitude     Float
+  contactNumber String?
+  timings       Json? // Stores { "open": "08:00", "close": "22:00" }
+  amenities     String[] // e.g., ["WiFi", "AC", "Power Backup"]
+  rating        Float       @default(0)
+  createdAt     DateTime    @default(now())
+
+  // Relationships
+  owner     User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  floors    Floor[]
+  inventory BookInventory[]
+  reviews   Review[]
+}
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  libraryId    Int
+  library      Library  @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  reviewerName String
+  userType     String?
+  rating       Int
+  comment      String?
+  createdAt    DateTime @default(now())
+}
+
+enum LibraryType {
+  reading_room
+  bookstore
+  library
+}
+
+model Floor {
+  id           Int           @id @default(autoincrement())
+  libraryId    Int
+  library      Library       @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  floorNumber  Int
+  name         String? // e.g., "Premium Floor"
+  totalSeats   Int
+  pricingPlans PricingPlan[]
+}
+
+model PricingPlan {
+  id             Int      @id @default(autoincrement())
+  floorId        Int
+  floor          Floor    @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  planType       String // e.g., "Monthly Standard"
+  priceAmount    Decimal  @db.Decimal(10, 2)
+  seatsAvailable Int
+  features       String[] // e.g., ["Ergonomic Chair", "Personal Light"]
+}
+
+model Book {
+  id        Int             @id @default(autoincrement())
+  title     String
+  author    String?
+  isbn      String?         @unique
+  genre     String?
+  inventory BookInventory[]
+}
+
+model BookInventory {
+  id          Int      @id @default(autoincrement())
+  bookId      Int
+  book        Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  libraryId   Int
+  library     Library  @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  priceNew    Decimal? @db.Decimal(10, 2)
+  priceUsed   Decimal? @db.Decimal(10, 2)
+  stockCount  Int      @default(0)
+  isAvailable Boolean  @default(true)
+}
