@@ -44,3 +44,22 @@ export const createLibrary = async (
     },
   });
 };
+
+
+export const getLibrariesByOwner = async (userId:string) => {
+    return await prisma.library.findMany(
+        {
+            where:{
+                ownerId:userId,
+            },
+
+            include:{
+                inventory:{
+                    include:{
+                        book:true,
+                    }
+                }
+            }
+        }
+    );
+}

@@ -35,3 +35,17 @@ export const createLibrary = async(req:Request , res:Response) => {
     }
 
 }
+
+export const getUserLibraries = async(req:Request , res:Response) => {
+        try{
+            //the authentication middleware already verified the user
+            //and attached the id here
+
+            const userId = (req as any).userId;
+
+            const libraries = await libraryService.getLibrariesByOwner(userId);
+            res.json(libraries);
+        }catch(error:any){
+            res.status(500).json({message:error.message});
+        }
+}
