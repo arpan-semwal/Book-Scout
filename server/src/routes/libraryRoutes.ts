@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getLibraries, createLibrary, getUserLibraries } from "../controllers/libraryController.js";
+import { getLibraries, createLibrary, getUserLibraries, deleteLibrary , updateLibrary} from "../controllers/libraryController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = Router();
@@ -11,5 +11,7 @@ router.get('/', getLibraries);
 // The 'authenticate' middleware runs first to verify the token
 router.post('/', authenticate, createLibrary);
 router.get('/my-libraries',authenticate , getUserLibraries);
+router.delete('/:id',authenticate , deleteLibrary);
+router.put('/:id',authenticate,updateLibrary);
 
 export default router;

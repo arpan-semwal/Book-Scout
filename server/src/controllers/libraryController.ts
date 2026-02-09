@@ -49,3 +49,48 @@ export const getUserLibraries = async(req:Request , res:Response) => {
             res.status(500).json({message:error.message});
         }
 }
+
+export const deleteLibrary = async(req:Request , res:Response) => {
+    try{
+        //Convert the string ID from the URL to a Number
+
+        const libraryId = parseInt(req.params.id as string);
+        const userId = (req as any).userId;
+
+        const result = await libraryService.deleteLibrary(libraryId,userId);
+
+        //check if anything was actually deleted
+        if(result.count === 0){
+            return res.status(404).json({
+                message:"Library not found or you do not have the permission to delete it."
+            });
+        }
+        res.status(200).json({message:"Library deleted successfully"});
+
+    }catch(error:any){
+        res.status(500).json({message:error.message});
+    }
+}
+
+
+export const updateLibrary = async(req:Request , res:Response) => {
+   try{ 
+    const libraryId = parseInt(req.params.id as string);
+    const userId = (req as any).userId;
+    const updateData = req.body;
+
+    const result = await libraryService.updateLibrary(libraryId,userId , updateData);
+
+    if(result.count === 0){
+        return res.status(404).json({
+            message:"Library not found or u do not have permission to update it"
+        });
+        
+    }
+
+    res.status(200).json({message:"Library updated sucessfully"});
+}catch(error:any){
+    res.status(500).json({message:error.message});
+}
+    
+}

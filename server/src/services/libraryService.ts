@@ -63,3 +63,26 @@ export const getLibrariesByOwner = async (userId:string) => {
         }
     );
 }
+
+
+export const deleteLibrary = async(libraryId:number , userId:string) => {
+    return await prisma.library.deleteMany({
+
+        //It tells the database: "Look for a record where the column named id matches the value stored in the variable libraryId."
+        where:{
+            id:libraryId,
+            ownerId:userId
+        }
+    })
+}
+
+
+export const updateLibrary = async(libraryId:number , userId:string , updateData:any) => {
+    return await prisma.library.updateMany({
+        where:{
+            id:libraryId,
+            ownerId:userId,
+        },
+        data:updateData
+    });
+}
