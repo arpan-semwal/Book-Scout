@@ -1,7 +1,5 @@
 import prisma from '../db.js';
 
- 
-
 export const addBookToLibrary = async (userId: string, libraryId: number, bookData: any) => {
   // 1. Security: Does the user own this library?
   const library = await prisma.library.findFirst({
@@ -55,3 +53,15 @@ export const addBookToLibrary = async (userId: string, libraryId: number, bookDa
     });
   }
 };
+
+export const getLibraryInventory = async(libraryId:number) => {
+  return await prisma.bookInventory.findMany({
+    where:{
+      libraryId:libraryId
+    },
+    include:{
+      book:true
+    }
+  })
+
+}

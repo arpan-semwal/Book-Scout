@@ -28,3 +28,17 @@ export const addBook = async(req:Request , res:Response) => {
         res.status(status).json({message: error.message});
     }
 }
+
+
+export const getLibraryInventory = async(req:Request , res:Response) => {
+    try{const id =  parseInt(req.params.id as string);
+
+    const result = await inventoryService.getLibraryInventory(id);
+
+    res.status(200).json({
+        message:"Book Fetched",
+        data:result
+    });}catch(error:any){
+        res.status(500).json({message:"Error fetching inventory",error:error.message});
+    }
+}
