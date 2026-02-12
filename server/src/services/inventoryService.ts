@@ -65,3 +65,65 @@ export const getLibraryInventory = async(libraryId:number) => {
   })
 
 }
+
+
+export const updateInventory = async(userId:string , inventoryId:number , updateData:any) =>{
+  // 1: Inventory dhundo aur sath mein library ki details bhi include karo
+  const inventoryItem = await prisma.bookInventory.findUnique({
+    where:{
+      id:inventoryId,
+    },
+    include:{
+      library:true, //isse hume library.ownerId mil jaega
+    }
+  });
+
+  // 2: Agar item ni mila
+  if(!inventoryItem){
+    throw new Error("Inventory item not found");
+  }
+
+  //3: Kya user hi library ka owner hai?
+  if(inventoryItem.library.ownerId !== userId){
+    throw new Error("Unauthorized: You don't own the library this book belongs to.")
+  }
+
+  //Sab sahi hai toh update karo
+
+  return await prisma.bookInventory.update({
+    where:{id:inventoryId},
+    data:{
+      priceNew:updateData.priceNew,
+      priceUsed:updateData.priceUsed,
+      stockCount:updateData.stockCount,
+      isAvailable:updateData.stockCount > 0
+    }
+  });
+
+}
+
+
+export const deleteFromInventory = async(userId:string , inventoryId:number) => {
+  const inventoryItem = await prisma.bookInventory.findUnique({
+    where:{
+      id:inventoryId,
+    },
+    include:{
+      library:true
+    }
+
+  });
+
+    if(!inventoryItem){
+      throw new Error ("Inventory Item  not found");
+    }
+
+    if(inventoryItem.library.ownerId !== userId){
+      throw new Error("Unauthorized Access Denied");
+    }
+
+
+    return await prisma.bookInventory.delete({
+      where:{id:inventoryId}
+    });
+}

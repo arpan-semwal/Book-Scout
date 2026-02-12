@@ -1,44 +1,86 @@
-import { Request, Response } from 'express';
-import * as inventoryService from '../services/inventoryService.js';
+import { Request, Response } from "express";
+import * as inventoryService from "../services/inventoryService.js";
 
-export const addBook = async(req:Request , res:Response) => {
+export const addBook = async (req: Request, res: Response) => {
+  try {
+    // 1. Get the Library ID from the URL and User ID from the token
+    const libraryId = parseInt(req.params.id as string);
+    const userId = (req as any).userId;
 
-    try{
-        // 1. Get the Library ID from the URL and User ID from the token
-        const libraryId = parseInt(req.params.id as string);
-        const userId = (req as any).userId;
+    //the book details sent by the user
+    const bookData = req.body;
 
+    //Trigger the complex logic in the service
+    const result = await inventoryService.addBookToLibrary(
+      userId,
+      libraryId,
+      bookData,
+    );
 
-        //the book details sent by the user
-        const bookData = req.body;
+    //Send back the the newly created/updated inventory
 
-        //Trigger the complex logic in the service
-        const result = await inventoryService.addBookToLibrary(userId, libraryId, bookData);
+    res.status(201).json({
+      message: "Book added to inventory successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    const status = error.message.includes("Unauthorized") ? 403 : 500;
+    res.status(status).json({ message: error.message });
+  }
+};
 
-        //Send back the the newly created/updated inventory
-
-        res.status(201).json({
-            message:"Book added to inventory successfully",
-            data:result
-        });
-        
-
-    }catch(error:any){
-        const status = error.message.includes("Unauthorized") ? 403 : 500;
-        res.status(status).json({message: error.message});
-    }
-}
-
-
-export const getLibraryInventory = async(req:Request , res:Response) => {
-    try{const id =  parseInt(req.params.id as string);
+export const getLibraryInventory = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id as string);
 
     const result = await inventoryService.getLibraryInventory(id);
 
     res.status(200).json({
-        message:"Book Fetched",
-        data:result
-    });}catch(error:any){
-        res.status(500).json({message:"Error fetching inventory",error:error.message});
+      message: "Book Fetched",
+      data: result,
+    });
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ message: "Error fetching inventory", error: error.message });
+  }
+};
+
+export const updateInventory = async (req: Request, res: Response) => {
+  try {
+    const inventoryId = parseInt(req.params.id as string);
+    const userId = (req as any).userId; //Token se aayi  hui id
+    const updateData = req.body;
+
+    const result = await inventoryService.updateInventory(
+      userId,
+      inventoryId,
+      updateData,
+    );
+
+    res.status(200).json({
+      message: "Inventory updated successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    //agar owner ship check fail hua toh 403(Forbidden) ya generic 500
+    const status = error.message.includes("Unauthorized") ? 403 : 500;
+    res.status(status).json({ message: error.message });
+  }
+};
+
+
+export const deleteInventory = async(req:Request , res:Response) => {
+    try{
+
+        const inventoryId  = parseInt(req.params.id as string);
+        const userId = (req as any).userId;
+
+        const result = await inventoryService.deleteFromInventory(userId , inventoryId);
+
+        res.status(200).json({message:"Book removed from inventory successfully"});
+    }catch(error:any){
+        const status = error.message.includes("Unauthorized") ? 403 : 500;
+        res.status(status).json({message:error.message});
     }
-}
+};
