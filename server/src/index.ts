@@ -4,6 +4,7 @@ import bookRoutes from "./routes/bookRoutes.js"
 import libraryRoutes from "./routes/libraryRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import inventoryRoutes from './routes/inventoryRoutes.js';
+import floorRouter from './routes/floorRoutes.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -20,6 +21,7 @@ app.use('/api/books',bookRoutes);
 app.use('/api/libraries',libraryRoutes);
 app.use('/api/users',userRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/floors', floorRouter);
  
 app.listen(PORT , () => {
     console.log(`Server is running at http://localhost:${PORT}`);
