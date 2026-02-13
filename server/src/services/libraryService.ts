@@ -86,3 +86,25 @@ export const updateLibrary = async(libraryId:number , userId:string , updateData
         data:updateData
     });
 }
+
+
+export const getLibraryDetails = async(libraryId:number) => {
+    return await prisma.library.findUnique({
+        where:{
+            id:libraryId,
+        },
+        include:{
+            floors:{
+                include:{
+                    pricingPlans:true,
+                }
+            },
+
+            inventory:{
+                include:{
+                    book:true
+                }
+            }
+        }
+    })
+}

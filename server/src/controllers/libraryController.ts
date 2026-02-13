@@ -94,3 +94,19 @@ export const updateLibrary = async(req:Request , res:Response) => {
 }
     
 }
+
+
+export const getLibraryDetails = async(req:Request , res:Response) => {
+    try{
+        const libraryId = parseInt(req.params.libraryId as string);
+        const result = await libraryService.getLibraryDetails(libraryId);
+
+        if(!result){
+            return res.status(400).json({message:"Library not found"});
+        }
+
+        return res.status(200).json(result);
+    }catch(error:any){
+        return res.status(500).json({message:error.message});
+    }
+}
