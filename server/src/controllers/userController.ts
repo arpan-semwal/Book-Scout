@@ -2,9 +2,9 @@ import * as userService from "../services/userService.js";
 import { Request , Response } from "express";
 
 export const register = async(req:Request , res:Response) => {
-     const {email , password , name} = req.body; 
+     const {email , password , name , phone , role} = req.body; 
     try{
-        const user = await userService.registerUser(email, password , name);
+        const user = await userService.registerUser(email, password , name , phone , role);
         const {password: _, ...userWithoutPassword} = user;
         res.status(201).json(userWithoutPassword);
     }catch(error){

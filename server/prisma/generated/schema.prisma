@@ -12,6 +12,8 @@ model User {
   email     String    @unique
   password  String
   name      String?
+  phone     String? // Add this
+  role      String    @default("student") // Add this (owner/student)
   libraries Library[]
 }
 

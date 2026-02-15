@@ -3,13 +3,15 @@ import prisma from '../db.js';
 import { error } from 'node:console';
 import jwt from "jsonwebtoken";
 
-export const registerUser = async(email:string , password:string , name:string) => {
+export const registerUser = async(email:string , password:string , name:string , phone:string , role:string) => {
     const hashedPassword = await bcrypt.hash(password , 10);
     const user = await prisma.user.create({
         data:{
             email:email,
             name:name,
             password:hashedPassword,
+            phone,
+            role
         }
     });
 
@@ -46,7 +48,7 @@ export const loginUser = async(email:string , password:string) => {
     }
 
      const token = jwt.sign(
-        {userId:user.id},
+        {userId:user.id , role:user.role},
         JWT_SECRET,
         {expiresIn:"1d"}
 
