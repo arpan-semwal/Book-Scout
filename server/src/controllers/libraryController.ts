@@ -110,3 +110,21 @@ export const getLibraryDetails = async(req:Request , res:Response) => {
         return res.status(500).json({message:error.message});
     }
 }
+
+export const searchLibraries = async(req:Request , res:Response) => {
+    try{
+        const query = req.query.q as string
+
+        if(!query){
+            return res.status(400).json({message:"Search quesry required"});
+        }
+
+        const result = await libraryService.searchLibraries(query);
+
+        return res.status(200).json(result);
+
+
+    }catch(error:any){
+        return res.status(500).json({message:error.message});
+    }
+}

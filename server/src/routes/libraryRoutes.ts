@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { getLibraries, createLibrary, getUserLibraries, deleteLibrary , updateLibrary , getLibraryDetails} from "../controllers/libraryController.js";
+import { getLibraries, createLibrary, getUserLibraries, deleteLibrary , updateLibrary , getLibraryDetails , searchLibraries} from "../controllers/libraryController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
+
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.get('/my-libraries',authenticate , getUserLibraries);
 router.delete('/:id',authenticate , deleteLibrary);
 router.put('/:id',authenticate,updateLibrary);
 router.get('/details/:libraryId', getLibraryDetails);
+router.get('/search', searchLibraries);
 
 export default router;

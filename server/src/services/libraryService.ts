@@ -108,3 +108,20 @@ export const getLibraryDetails = async(libraryId:number) => {
         }
     })
 }
+
+export const searchLibraries = async(query:string) => {
+    return await prisma.library.findMany({
+        where:{
+            OR:[
+                {name:{contains:query , mode: "insensitive"}},
+                {address:{contains:query , mode:"insensitive"}}
+            ]
+        },
+
+        include:{
+            _count:{
+                select:{floors:true}
+            }
+        }
+    })
+}
