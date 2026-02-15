@@ -1,12 +1,26 @@
-import React from 'react'
+import Navbar from '../components/Navbar';
+// Hum do alag components banayenge
+import OwnerDashboard from '../components/OwnerDashboard'; 
+import StudentDashboard from '../components/StudentDashboard';
 
 const Dashboard = () => {
+  // Local storage se role uthao
+  const role = localStorage.getItem("userRole");
+
   return (
-    <div className="p-4 md:p-8">
-      <h1 className="text-2xl font-bold">Welcome to your Dashboard</h1>
-      <p className="text-gray-600">Yahan aapki libraries ki list dikhegi.</p>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Yahan ho rahi hai role-based baat! */}
+        {role === 'owner' ? (
+          <OwnerDashboard /> 
+        ) : (
+          <StudentDashboard />
+        )}
+      </div>
     </div>
   );
-}
+};
 
-export default Dashboard
+export default Dashboard;
