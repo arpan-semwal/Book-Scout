@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
         {/* Is div ki wajah se poora app responsive background lega */}
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/login" />} />
           {/* Dashboard route hum agle step mein banayenge */}
         </Routes>
