@@ -31,7 +31,11 @@ export const createLibrary = async (
   name: string, 
   ownerId: string, 
   lat: number, 
-  lng: number
+  lng: number,
+  address:string,
+  amenities:string[],
+  type:any,
+  contactNumber:string
 ) => {
   return await prisma.library.create({
     data: {
@@ -39,8 +43,10 @@ export const createLibrary = async (
       ownerId,
       latitude: lat,
       longitude: lng,
-      // The other fields like 'type' have defaults in the schema, 
-      // so they are optional here!
+      address,
+      amenities,
+      type,
+      contactNumber
     },
   });
 };

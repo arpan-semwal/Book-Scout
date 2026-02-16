@@ -13,7 +13,7 @@ export const getLibraries = async(req:Request , res:Response) => {
 
 export const createLibrary = async(req:Request , res:Response) => {
     try{
-        const {name , latitude , longitude} = req.body;
+        const {name , latitude , longitude , address , amenities , type, contactNumber} = req.body;
 
         //Get the ID of the logged-in user (attached by your own authmiddleware)
         const ownerId = (req as any).userId;
@@ -22,7 +22,11 @@ export const createLibrary = async(req:Request , res:Response) => {
             name,
             ownerId,
             Number(latitude),
-            Number(longitude)
+            Number(longitude),
+            address,
+            amenities,
+            type,
+            contactNumber
         );
 
         res.status(201).json({

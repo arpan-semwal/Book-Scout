@@ -10,7 +10,7 @@ router.get('/', getLibraries);
 
 // PROTECTED: Only logged-in users can create a library
 // The 'authenticate' middleware runs first to verify the token
-router.post('/', authenticate, createLibrary);
+router.post('/create', authenticate, createLibrary);
 router.get('/my-libraries',authenticate , getUserLibraries);
 router.delete('/:id',authenticate , deleteLibrary);
 router.put('/:id',authenticate,updateLibrary);
