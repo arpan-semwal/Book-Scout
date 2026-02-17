@@ -16,6 +16,8 @@ const OwnerDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [libraries, setLibraries] = useState<Library[]>([]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -68,6 +70,30 @@ const OwnerDashboard = () => {
     },
   ];
 
+  const closeAndReset = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setFormData({
+      name: "",
+      address: "",
+      contactNumber: "",
+      type: "reading_room",
+      amenities: [],
+    });
+  };
+
+  const handleEdit = (lib: Library) => {
+    setEditingId(lib.id);
+    setFormData({
+      name: lib.name,
+      address: lib.address,
+      contactNumber: lib.contactNumber,
+      type: lib.type,
+      amenities: lib.amenities,
+    });
+    setIsModalOpen(true);
+  };
+
   // 4. Handlers
   const handleAmenityChange = (amenity: string) => {
     setFormData((prev) => ({
@@ -100,11 +126,15 @@ const OwnerDashboard = () => {
           };
 
           // API call to backend
-          await API.post("/libraries/create", payload);
-
-          alert("Created Library!");
-          setIsModalOpen(false);
-
+          if (editingId) {
+            await API.put(`/libraries/${editingId}`, payload);
+            alert("Library updated ✅");
+          } else {
+            await API.post("/libraries/create", payload);
+            alert("Registered New Library! 🎉 ");
+          }
+          //Reset Everything and Refresh list
+          closeAndReset();
           // Refresh the list immediately
           fetchMyLibraries();
         } catch (error: unknown) {
@@ -128,7 +158,7 @@ const OwnerDashboard = () => {
   //pass id into the function so that it knows which id to delte
   const handleDelete = async (id: number) => {
     //Confirmation to delete library
-    if (!window.confirm("Are you sure you want to delete library"));
+    if (!window.confirm("Are you sure you want to delete library")) return;
 
     try {
       await API.delete(`/libraries/${id}`);
@@ -227,16 +257,20 @@ const OwnerDashboard = () => {
                 </button>
 
                 <div className="flex gap-2">
-                  <button className="flex-1 py-2 bg-gray-50 text-gray-600 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-colors">
+                  <button
+                    onClick={() => handleEdit(lib)}
+                    className="flex-1 py-2 bg-gray-50 text-gray-600 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-colors"
+                  >
                     ✏️ Edit
                   </button>
 
-                  <button className="flex-1 py-2 bg-red-50 text-red-600 rounded-xl font-semibold text-sm hover:bg-red-100 transition-colors" onClick={() => handleDelete(lib.id)}>
+                  <button
+                    className="flex-1 py-2 bg-red-50 text-red-600 rounded-xl font-semibold text-sm hover:bg-red-100 transition-colors"
+                    onClick={() => handleDelete(lib.id)}
+                  >
                     🗑️ Delete
                   </button>
                 </div>
-
-
               </div>
             </div>
           ))}
@@ -260,10 +294,10 @@ const OwnerDashboard = () => {
           <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800">
-                Register New Library
+                {editingId ? "Edit Library Details" : "Register New Library"}
               </h2>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeAndReset}
                 className="text-gray-400 hover:text-gray-600 text-3xl"
               >
                 &times;
@@ -276,6 +310,7 @@ const OwnerDashboard = () => {
                   Library Name
                 </label>
                 <input
+                  value={formData.name}
                   required
                   type="text"
                   placeholder="Peaceful Study Zone"
@@ -292,6 +327,7 @@ const OwnerDashboard = () => {
                     Type
                   </label>
                   <select
+                    value={formData.type} // Yeh line add karo
                     className="w-full border rounded-xl p-3 bg-white outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) =>
                       setFormData({ ...formData, type: e.target.value })
@@ -307,6 +343,7 @@ const OwnerDashboard = () => {
                     Contact Number
                   </label>
                   <input
+                    value={formData.contactNumber}
                     type="tel"
                     placeholder="+91 9876543210"
                     className="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500"
@@ -325,6 +362,7 @@ const OwnerDashboard = () => {
                   Full Address
                 </label>
                 <textarea
+                  value={formData.address}
                   required
                   placeholder="Plot no, Street, Area, City..."
                   className="w-full border rounded-xl p-3 h-20 outline-none focus:ring-2 focus:ring-blue-500"
@@ -369,7 +407,11 @@ const OwnerDashboard = () => {
                   disabled={loading}
                   className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 disabled:bg-blue-300 transition-all active:scale-[0.98]"
                 >
-                  {loading ? "Fetching Location..." : "Register Library"}
+                  {loading
+                    ? "Processing..."
+                    : editingId
+                      ? "Save Changes"
+                      : "Register Library"}
                 </button>
               </div>
             </form>
