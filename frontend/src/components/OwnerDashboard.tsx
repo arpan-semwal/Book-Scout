@@ -17,6 +17,7 @@ const OwnerDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [libraries, setLibraries] = useState<Library[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -171,10 +172,24 @@ const OwnerDashboard = () => {
     }
   };
 
+  const filteredLibraries = libraries.filter((lib) =>
+  lib.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  lib.address.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
   return (
     <div className="p-4 md:p-8 animate-fadeIn">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div className="mb-6 flex justify-center">
+          <input
+            type="text"
+            placeholder="🔍 Search by name or address..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-md p-3 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
+          />
+        </div>
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-800">
             Owner Dashboard
@@ -182,7 +197,11 @@ const OwnerDashboard = () => {
           <p className="text-gray-500">
             Manage Your Libraries and track performance
           </p>
+          
         </div>
+
+       
+        
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all active:scale-95"
@@ -222,7 +241,7 @@ const OwnerDashboard = () => {
 
       {libraries.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {libraries.map((lib) => (
+          {filteredLibraries.map((lib) => (
             <div
               key={lib.id}
               className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
@@ -282,8 +301,7 @@ const OwnerDashboard = () => {
             No Libraries Found
           </h2>
           <p className="text-gray-500 mt-2">
-            Pehli library add karne ke liye upar diye gaye button par click
-            karein.
+           "{searchTerm}" se milti-julti koi library nahi mili... 🧐
           </p>
         </div>
       )}
