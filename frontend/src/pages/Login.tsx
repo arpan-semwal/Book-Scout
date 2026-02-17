@@ -76,7 +76,7 @@ const Login = () => {
 
         <p className="mt-6 text-center text-gray-600 text-sm">
           Don't have and account?
-          <span className="text-blue-600 cursor-pointer font-medium">
+          <span onClick={() =>navigate('/register')} className="text-blue-600 cursor-pointer font-medium">
             Sign Up
           </span>
         </p>
