@@ -11,6 +11,12 @@ interface Library {
   latitude: number;
   longitude: number;
 }
+
+interface DashboardStats {
+  totalLibraries : number;
+  activeBookings: number;
+  todayRevenue: number;
+}
 const OwnerDashboard = () => {
   // 1. States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +24,11 @@ const OwnerDashboard = () => {
   const [libraries, setLibraries] = useState<Library[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [stats , setStats] = useState<DashboardStats>({
+    totalLibraries:0,
+    activeBookings:0,
+    todayRevenue:0,
+  })
 
   const [formData, setFormData] = useState({
     name: "",
@@ -45,31 +56,29 @@ const OwnerDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    fetchMyLibraries();
-  }, []);
 
   // 3. Stats Calculation (Dynamic)
-  const stats = [
-    {
-      label: "Total Libraries",
-      value: libraries.length.toString(),
-      icon: "🏢",
-      color: "text-blue-600",
-    },
-    {
-      label: "Active Booking",
-      value: "0",
-      icon: "✅",
-      color: "text-green-600",
-    },
-    {
-      label: "Today's Revenue",
-      value: "₹0",
-      icon: "💰",
-      color: "text-orange-600",
-    },
-  ];
+ const statCards = [
+  {
+    label: "Total Libraries",
+    // libraries.length ki jagah API wala data use karein (zyada accurate hai)
+    value: stats.totalLibraries.toString(), 
+    icon: "🏢",
+    color: "text-blue-600",
+  },
+  {
+    label: "Active Booking",
+    value: stats.activeBookings.toString(), // State use karo
+    icon: "✅",
+    color: "text-green-600",
+  },
+  {
+    label: "Today's Revenue",
+    value: `₹${stats.todayRevenue}`, // State use karo
+    icon: "💰",
+    color: "text-orange-600",
+  },
+];
 
   const closeAndReset = () => {
     setIsModalOpen(false);
@@ -104,6 +113,26 @@ const OwnerDashboard = () => {
         : [...prev.amenities, amenity],
     }));
   };
+
+
+  const fetchDashboardStats = async() => {
+    try{
+      const response = await API.get('/stats/owner-dashboard');
+      if(response.data.success){
+        setStats(response.data.data)
+      }
+    }catch(error){
+      console.error("Error in fetching stats: ",error);
+    }
+  }
+
+  
+  useEffect(() => {
+    fetchMyLibraries();
+    fetchDashboardStats();
+  }, []);
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -212,7 +241,7 @@ const OwnerDashboard = () => {
 
       {/* Stats Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        {stats.map((stat, index) => (
+        {statCards.map((stat, index) => (
           <div
             key={index}
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"

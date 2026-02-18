@@ -15,6 +15,7 @@ model User {
   phone     String? // Add this
   role      String    @default("student") // Add this (owner/student)
   libraries Library[]
+  bookings  Booking[]
 }
 
 model Library {
@@ -30,6 +31,7 @@ model Library {
   amenities     String[] // e.g., ["WiFi", "AC", "Power Backup"]
   rating        Float       @default(0)
   createdAt     DateTime    @default(now())
+  bookings      Booking[]
 
   // Relationships
   owner     User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
@@ -66,13 +68,14 @@ model Floor {
 }
 
 model PricingPlan {
-  id             Int      @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   floorId        Int
-  floor          Floor    @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  floor          Floor     @relation(fields: [floorId], references: [id], onDelete: Cascade)
   planType       String // e.g., "Monthly Standard"
-  priceAmount    Decimal  @db.Decimal(10, 2)
+  priceAmount    Decimal   @db.Decimal(10, 2)
   seatsAvailable Int
   features       String[] // e.g., ["Ergonomic Chair", "Personal Light"]
+  bookings       Booking[]
 }
 
 model Book {
@@ -94,4 +97,19 @@ model BookInventory {
   priceUsed   Decimal? @db.Decimal(10, 2)
   stockCount  Int      @default(0)
   isAvailable Boolean  @default(true)
+}
+
+model Booking {
+  id         Int         @id @default(autoincrement())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+  libraryId  Int
+  library    Library     @relation(fields: [libraryId], references: [id])
+  planId     Int
+  plan       PricingPlan @relation(fields: [planId], references: [id])
+  startDate  DateTime    @default(now())
+  endDate    DateTime
+  amountPaid Decimal     @db.Decimal(10, 2)
+  status     String      @default("active")
+  createdAt  DateTime    @default(now())
 }

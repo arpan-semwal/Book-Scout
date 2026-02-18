@@ -189,6 +189,18 @@ exports.Prisma.BookInventoryScalarFieldEnum = {
   isAvailable: 'isAvailable'
 };
 
+exports.Prisma.BookingScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  libraryId: 'libraryId',
+  planId: 'planId',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  amountPaid: 'amountPaid',
+  status: 'status',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -227,7 +239,8 @@ exports.Prisma.ModelName = {
   Floor: 'Floor',
   PricingPlan: 'PricingPlan',
   Book: 'Book',
-  BookInventory: 'BookInventory'
+  BookInventory: 'BookInventory',
+  Booking: 'Booking'
 };
 
 /**
