@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import API from "../api/axiosInstance";
+import {useNavigate } from "react-router-dom";
 
 interface LibraryExplore {
   id: number;
@@ -13,11 +14,13 @@ interface LibraryExplore {
   };
 }
 
+
 const StudentExplore = () => {
   //Use interface
   const [libraries, setLibraries] = useState<LibraryExplore[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const fetchLibraries = async () => {
     try {
@@ -85,7 +88,7 @@ const StudentExplore = () => {
                 </p>
               </div>
 
-              <button className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold transition-colors">
+              <button className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold transition-colors" onClick={ () =>navigate(`/library/${lib.id}`)}>
                 View Details
               </button>
             </div>
